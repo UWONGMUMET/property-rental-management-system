@@ -1,6 +1,10 @@
 import express from "express";
 import { config } from "./config/config.js";
+
 import { success } from "./utils/response.js";
+import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
+import { errorHandler } from "./middlewares/errorHandler.middleware.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 
 const app = express();
 app.use(express.json());
@@ -18,6 +22,11 @@ app.get("/health-check", (req, res) => {
         200
     )
 });
+
+app.use("/api/v1/auth", authRoutes);
+
+app.use(notFoundMiddleware);
+app.use(errorHandler);
 
 app.listen(config.port, () => {
     console.log([
