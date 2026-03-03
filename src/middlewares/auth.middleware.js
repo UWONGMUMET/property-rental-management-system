@@ -1,0 +1,32 @@
+export const authMiddleware = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
+            throw new AppError({
+                message: "Authorization header is missing or invalid",
+                statusCode: 401,
+                code: "UNAUTHORIZED"
+            });
+        }
+        const token = authHeader.split(" ")[1];
+        const decoded = verifyAccessToken(token);
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id: decoded.id
+            }
+        });
+
+        if (!user) {
+            throw new AppError({
+                message: "User not found",
+                statusCode: 404,
+                code: "USER_NOT_FOUND"
+            });
+        }
+        req.user = user;
+        return next();
+    } catch (error) {
+        return next(error);
+    }
+}
