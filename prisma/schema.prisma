@@ -18,6 +18,26 @@ enum Role {
   ADMIN
 }
 
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+}
+
+enum DisputeStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
 model User {
   id String @id @default(uuid())
   name String
@@ -25,11 +45,15 @@ model User {
   password String
   role Role @default(USER)
 
+  properties Property[]
+  bookings Booking[]
+  disputes Dispute[]
   refreshTokens RefreshToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([role])
   @@map("users")
 }
 
@@ -45,4 +69,114 @@ model RefreshToken {
 
   @@index([userId])
   @@map("refresh_tokens")
+}
+
+model Property {
+  id String @id @default(uuid())
+  title String
+  description String
+  city String
+  address String
+  price Decimal @db.Decimal(10, 2)
+
+  ownerId String
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  images PropertyImage[]
+  bookings Booking[]
+  availabilityCalendar AvailabilityCalendar[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId])
+  @@index([city])
+  @@map("properties")
+
+}
+
+model PropertyImage {
+  id String @id @default(uuid())
+  url String
+
+  propertyId String
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("property_images")
+}
+
+model AvailabilityCalendar {
+  id String @id @default(uuid())
+  propertyId String
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  date DateTime
+  isAvailable Boolean @default(true)
+
+  @@unique([propertyId, date])
+  @@index([date])
+  @@map("availability_calendars")
+}
+
+model Booking {
+  id String @id @default(uuid())
+  
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  propertyId String
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  startDate DateTime
+  endDate DateTime
+
+  totalPrice Decimal @db.Decimal(10,2)
+  status BookingStatus @default(PENDING)
+
+  payment Payment?
+  dispute Dispute?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([propertyId])
+  @@index([userId])
+  @@index([startDate, endDate])
+  @@map("bookings")
+}
+
+model Payment {
+  id String @id @default(uuid())
+
+  bookingId String @unique
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  amount Decimal @db.Decimal(10,2)
+  status PaymentStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+model Dispute {
+  id String @id @default(uuid())
+
+  bookingId String @unique
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reason String
+  status DisputeStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("disputes")
 }
