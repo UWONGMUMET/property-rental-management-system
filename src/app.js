@@ -4,7 +4,12 @@ import { config } from "./config/config.js";
 import { success } from "./utils/response.js";
 import { notFoundMiddleware } from "./middlewares/notFound.middleware.js";
 import { errorHandler } from "./middlewares/errorHandler.middleware.js";
+
 import authRoutes from "./modules/auth/auth.routes.js";
+import propertyRoutes from "./modules/property/property.routes.js";
+import bookingRoutes from "./modules/booking/booking.routes.js";
+import paymentRoutes from "./modules/payment/payment.routes.js";
+
 
 const app = express();
 app.use(express.json());
@@ -24,6 +29,9 @@ app.get("/health-check", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/properties", propertyRoutes);
+app.use("/api/v1/bookings", bookingRoutes);
+app.use("/api/v1/payments", paymentRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandler);
