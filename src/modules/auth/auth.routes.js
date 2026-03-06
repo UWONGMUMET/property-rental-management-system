@@ -5,9 +5,9 @@ import { loginSchema, refreshTokenSchema, registerSchema } from "./auth.validati
 
 const router = express.Router();
 
-router.post("/register", validate(registerSchema), register);
-router.post("/login", validate(loginSchema), login);
-router.post("/refresh", validate(refreshTokenSchema), refreshToken);
-router.post("/logout", validate(refreshTokenSchema), logout);
+router.post("/register", validate(registerSchema, "body"), register);
+router.post("/login", validate(loginSchema, "body"), login);
+router.post("/refresh", validate(refreshTokenSchema, "body"), refreshToken);
+router.post("/logout", validate(refreshTokenSchema, "body"), logout);
 
 export default router;
