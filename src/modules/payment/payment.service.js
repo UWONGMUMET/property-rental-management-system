@@ -1,6 +1,6 @@
 import { paymentRepository } from "./payment.repository.js";
 import { prisma } from "../../config/prisma.js";
-import { AppError } from "../../utils/appError.js";
+import { AppError } from "../../utils/AppError.js";
 
 
 export const createPaymentService = async ({ userId, bookingId }) => {
