@@ -18,6 +18,7 @@ export const errorHandler = (err, req, res, next) => {
         statusCode: error.statusCode,
         method: req.method,
         path: req.originalUrl,
+        userId: req.user?.id || null,
         stack: config.nodeEnv === "development" ? err.stack : undefined,
     });
 
