@@ -51,13 +51,21 @@ export const updatePropertyService = async ({ userId, propertyId, data }) => {
 
     if (property.ownerId !== userId) {
         throw new AppError({
-            message: "You are not authorized to update this property",
-            statusCode: 401,
-            code: "UNAUTHORIZED"
+            message: "Forbidden",
+            statusCode: 403,
+            code: "FORBIDDEN"
         });
     }
 
-    return propertyRepository.update(propertyId, data);
+    const updateData = {};
+
+    if (data.title !== undefined) updateData.title = data.title;
+    if (data.description !== undefined) updateData.description = data.description;
+    if (data.city !== undefined) updateData.city = data.city;
+    if (data.address !== undefined) updateData.address = data.address;
+    if (data.price !== undefined) updateData.price = data.price;
+
+    return propertyRepository.update(propertyId, updateData);
 };
 
 export const deletePropertyService = async ({ userId, propertyId }) => {
