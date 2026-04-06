@@ -9,6 +9,8 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import propertyRoutes from "./modules/property/property.routes.js";
 import bookingRoutes from "./modules/booking/booking.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
+import propertyImageRoutes from "./modules/propertyImage/propertyImage.routes.js";
+import reviewRoutes from "./modules/review/review.routes.js";
 
 
 const app = express();
@@ -32,6 +34,8 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/properties", propertyRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 app.use("/api/v1/payments", paymentRoutes);
+app.use("/api/v1/property-images", propertyImageRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandler);
